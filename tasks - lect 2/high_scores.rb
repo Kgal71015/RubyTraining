@@ -4,18 +4,18 @@ class HighScores
     end     
 
     def scores
-        return @some_collection
+        @some_collection
     end
 
     def latest
-        return @some_collection[-1]
+        @some_collection[-1]
     end
 
     def personal_best
-        return @some_collection.max
+        @some_collection.max
     end
 
     def personal_top_three
-        return @some_collection.max(3)
+        @some_collection.max(3)
     end
 end  
