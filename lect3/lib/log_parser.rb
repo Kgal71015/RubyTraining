@@ -1,22 +1,28 @@
+require_relative 'log_reader'
+
 class LogParser
   def initialize(file_path)
     @log_reader = LogReader.new(file_path)
   end
 
   def get_most_viewed_pages()
-    content = @log_reader.read_all_lines
-    get_most_viewed(content)
+    get_most_viewed(get_file_content)
   end
 
   def get_most_unique_visited_pages()
-    content = @log_reader.read_all_lines
-    most_unique = get_most_unique(content)
-    for mu in most_unique
-      puts mu
-    end
+    get_most_unique(get_file_content)
   end
 
   private
+
+  def get_file_content
+    content = @log_reader.read_all_lines
+    if content.any? 
+      content
+    else
+      p 'file is empy, stopping service execution'
+    end
+  end
 
   def get_most_viewed(file_content)
     page_names = []
@@ -33,58 +39,21 @@ class LogParser
   end
 
   def get_most_unique(file_content)
-    # parse to dict and validate
-    # return
-  end
-end
+    uniq_formatted_values = file_content.uniq
+    pages_names = []
+    for val in file_content
+      pages_names.append(val.split(' ').first)
+    end
+    uniq_pages_names = pages_names.uniq
 
-
-class LogReader
-  def initialize(file_path)
-    @file_path = file_path
-  end
-
-  def read_all_lines
-    begin
-      File.open(@file_path, 'r') do |file|
-      file.readlines.map(&:chomp).each
-      end    
-    rescue Errno::ENOENT => erno
-      p "There is no such file #{@file_path}"
+    pages_with_most_uniqe_visits = []
+    for upn in uniq_pages_names
+      uniqe_count = uniq_formatted_values.select{|value| value.include? "#{upn} "}.size
+      pages_with_most_uniqe_visits.append([uniqe_count, upn])
+    end
+    pages_with_most_uniqe_visits = pages_with_most_uniqe_visits.sort.reverse.map {|nr, name| "#{name} #{nr}"}
+    for val in pages_with_most_uniqe_visits
+      puts val
     end
   end
 end
-
-file_path = File.expand_path('.././pubilc/webserver.log')
-# reader = LogReader.new(file_path)
-# text = reader.read_all_lines
-
-log_parser = LogParser.new(file_path)
-log_parser.get_most_viewed_pages()
-
-
-
-#### MOST UNIQUE
-# values = []
-# pages = []
-# for line in text
-#   val = line.split(' ')
-#   pages.append(val.first)
-#   values.append("#{val[0]} #{val[1]}")
-# end
-
-# uniq_pages_names = pages.uniq
-
-# unique_pages_sorted = {}
-# for pn in uniq_pages_names
-#   ips = []
-#   for val in values
-#     if val.include? pn
-#       ips.append(val.split(' ')[1])
-#     end
-#   end
-#   unique_pages_sorted[pn] = ips.uniq.count
-# end
-
-# most_unique = unique_pages_sorted.sort_by { |k| k[1] }.reverse
-# p most_unique
