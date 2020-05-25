@@ -1,21 +1,19 @@
 class HighScores   
-    def initialize(scores)
-        @some_collection = scores
-    end     
+  attr_reader :scores
 
-    def scores
-        @some_collection
-    end
+  def initialize(scores)
+    @scores = scores
+  end
 
-    def latest
-        @some_collection[-1]
-    end
+  def latest
+    scores[-1]
+  end
 
-    def personal_best
-        @some_collection.max
-    end
+  def personal_best
+    scores.max
+  end
 
-    def personal_top_three
-        @some_collection.max(3)
-    end
+  def personal_top_three
+    scores.max(3)
+  end
 end  
