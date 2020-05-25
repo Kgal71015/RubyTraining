@@ -25,13 +25,9 @@ class LogParser
   end
 
   def get_most_viewed(file_content)
-    page_names = []
-    for line in file_content
-      page_names.append(line.split(' ').first)
-    end
-
-    counted_page_occurances = page_names.tally
+    counted_page_occurances = get_pages_names(file_content).tally
     occurances_formatted = counted_page_occurances.map { |x, y| "#{y} #{x}"}.sort.reverse
+
     for val in occurances_formatted
       splitted = val.split(' ')
       puts("#{splitted[1]} #{splitted[0]}")
@@ -39,21 +35,26 @@ class LogParser
   end
 
   def get_most_unique(file_content)
-    uniq_formatted_values = file_content.uniq
-    pages_names = []
-    for val in file_content
-      pages_names.append(val.split(' ').first)
-    end
-    uniq_pages_names = pages_names.uniq
-
+    uniq_file_lines = file_content.uniq
+    uniq_pages_names = get_pages_names(file_content).uniq
     pages_with_most_uniqe_visits = []
+
     for upn in uniq_pages_names
-      uniqe_count = uniq_formatted_values.select{|value| value.include? "#{upn} "}.size
+      uniqe_count = uniq_file_lines.select{|value| value.include? "#{upn} "}.size
       pages_with_most_uniqe_visits.append([uniqe_count, upn])
     end
+    
     pages_with_most_uniqe_visits = pages_with_most_uniqe_visits.sort.reverse.map {|nr, name| "#{name} #{nr}"}
     for val in pages_with_most_uniqe_visits
       puts val
     end
+  end
+
+  def get_pages_names(file_content)
+    page_names = []
+    for line in file_content
+      page_names.append(line.split(' ').first)
+    end
+    page_names
   end
 end
